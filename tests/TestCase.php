@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Misaf\VendraBlog\Tests;
 
 use Illuminate\Support\Facades\Http;
-use Misaf\VendraBlog\BlogServiceProvider;
+use Misaf\VendraBlog\Providers\BlogServiceProvider;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Override;
 
