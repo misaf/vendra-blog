@@ -59,7 +59,8 @@ final class BlogPostCategoryForm
                     ->columnSpanFull()
                     ->image()
                     ->label(__('vendra-blog::attributes.image'))
-                    ->panelLayout('grid'),
+                    ->panelLayout('grid')
+                    ->responsiveImages(),
 
                 Toggle::make('status')
                     ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly("data.status"))
