@@ -7,6 +7,7 @@ namespace Misaf\VendraBlog\Providers;
 use Filament\Panel;
 use Illuminate\Foundation\Console\AboutCommand;
 use Misaf\VendraBlog\BlogPlugin;
+use Misaf\VendraBlog\Console\Commands\SeedCommand;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -21,6 +22,7 @@ final class BlogServiceProvider extends PackageServiceProvider
             ->hasMigrations([
                 'create_blogs_table'
             ])
+            ->hasCommands(SeedCommand::class)
             ->hasInstallCommand(function (InstallCommand $command): void {
                 $command->askToStarRepoOnGitHub('misaf/vendra-blog');
             });
