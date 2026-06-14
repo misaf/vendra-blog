@@ -7,6 +7,7 @@ namespace Misaf\VendraBlog\Models;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\UseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Carbon;
 use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
+use Misaf\VendraBlog\Database\Factories\BlogPostCategoryFactory;
 use Misaf\VendraBlog\Observers\BlogPostCategoryObserver;
 use Misaf\VendraMultimedia\Concerns\HasDefaultMediaConversions;
 use Misaf\VendraTenant\Traits\BelongsToTenant;
@@ -41,6 +43,7 @@ use Spatie\Translatable\HasTranslations;
 #[Fillable(['name', 'description', 'slug', 'position', 'status'])]
 #[Hidden(['tenant_id'])]
 #[ObservedBy([BlogPostCategoryObserver::class])]
+#[UseFactory(BlogPostCategoryFactory::class)]
 final class BlogPostCategory extends Model implements HasMedia, Sortable
 {
     use BelongsToTenant;
@@ -50,7 +53,7 @@ final class BlogPostCategory extends Model implements HasMedia, Sortable
         HasDefaultMediaConversions::registerMediaConversions insteadof InteractsWithMedia;
     }
 
-    /** @use HasFactory<BlogPostCategory> */
+    /** @use HasFactory<BlogPostCategoryFactory> */
     use HasFactory;
     use HasTranslations;
     use LogsActivity;
