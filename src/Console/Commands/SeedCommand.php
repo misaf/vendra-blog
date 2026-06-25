@@ -7,9 +7,9 @@ namespace Misaf\VendraBlog\Console\Commands;
 use Misaf\VendraBlog\BlogPlugin;
 use Misaf\VendraBlog\Database\Seeders\DemoContentSeeder;
 use Misaf\VendraBlog\Database\Seeders\PermissionPolicySeeder;
-use Misaf\VendraSupport\Console\Commands\BaseSeedCommand;
+use Misaf\VendraTenant\Console\Commands\TenantSeedCommand;
 
-final class SeedCommand extends BaseSeedCommand
+final class SeedCommand extends TenantSeedCommand
 {
     protected const string MODULE_NAME = BlogPlugin::ID;
 

@@ -8,11 +8,33 @@ use Illuminate\Support\Facades\Validator;
 use Misaf\VendraBlog\Database\Factories\BlogPostCategoryFactory;
 use Misaf\VendraBlog\Database\Factories\BlogPostFactory;
 use Misaf\VendraBlog\Models\BlogPostCategory;
-use Misaf\VendraSupport\Database\Seeders\TenantDemoContentSeeder;
+use Misaf\VendraSupport\Database\Seeders\DemoContentSeeder as BaseDemoContentSeeder;
+use Misaf\VendraTenant\Concerns\RequiresCurrentTenant;
 use Misaf\VendraTenant\Models\Tenant;
 
-final class DemoContentSeeder extends TenantDemoContentSeeder
+final class DemoContentSeeder extends BaseDemoContentSeeder
 {
+    use RequiresCurrentTenant;
+
+    protected function seedFactories(): void
+    {
+        $tenant = $this->currentTenant();
+
+        $this->seedFactoryRecords($tenant);
+    }
+
+    /**
+     * @param list<array<string, mixed>> $records
+     */
+    protected function seedFixtures(array $records): void
+    {
+        $tenant = $this->currentTenant();
+
+        foreach ($records as $record) {
+            $this->seedFixtureRecord($tenant, $record);
+        }
+    }
+
     protected function seedFactoryRecords(Tenant $tenant): void
     {
         BlogPostCategoryFactory::new()
@@ -20,8 +42,8 @@ final class DemoContentSeeder extends TenantDemoContentSeeder
             ->enabled()
             ->count(4)
             ->create()
-            ->each(fn(BlogPostCategory $category): mixed => BlogPostFactory::new()
-                ->forCategory($category)
+            ->each(fn(BlogPostCategory $blogPostCategory): mixed => BlogPostFactory::new()
+                ->forCategory($blogPostCategory)
                 ->enabled()
                 ->count(3)
                 ->create());
@@ -50,18 +72,18 @@ final class DemoContentSeeder extends TenantDemoContentSeeder
      */
     private function handleSeedFixtureRecord(Tenant $tenant, array $data): void
     {
-        $category = new BlogPostCategory([
+        $blogPostCategory = new BlogPostCategory([
             'name'        => $data['name'],
             'description' => $data['description'],
             'slug'        => $data['slug'],
             'status'      => $data['status'],
         ]);
 
-        $category->tenant_id = $tenant->id;
-        $category->save();
+        $blogPostCategory->tenant_id = $tenant->id;
+        $blogPostCategory->save();
 
-        foreach ($data['blog_posts'] as $postRecord) {
-            $this->handleBlogPostFixtureRecord($tenant, $category, $postRecord);
+        foreach ($data['blog_posts'] as $blogPostRecord) {
+            $this->handleBlogPostFixtureRecord($tenant, $blogPostCategory, $blogPostRecord);
         }
     }
 
@@ -71,19 +93,19 @@ final class DemoContentSeeder extends TenantDemoContentSeeder
      *     description: non-empty-array<string, string>,
      *     slug: non-empty-array<string, string>,
      *     status: bool
-     * } $postRecord
+     * } $blogPostRecord
      */
-    private function handleBlogPostFixtureRecord(Tenant $tenant, BlogPostCategory $category, array $postRecord): void
+    private function handleBlogPostFixtureRecord(Tenant $tenant, BlogPostCategory $blogPostCategory, array $blogPostRecord): void
     {
-        $post = $category->blogPosts()->make([
-            'name'        => $postRecord['name'],
-            'description' => $postRecord['description'],
-            'slug'        => $postRecord['slug'],
-            'status'      => $postRecord['status'],
+        $blogPost = $blogPostCategory->blogPosts()->make([
+            'name'        => $blogPostRecord['name'],
+            'description' => $blogPostRecord['description'],
+            'slug'        => $blogPostRecord['slug'],
+            'status'      => $blogPostRecord['status'],
         ]);
 
-        $post->tenant_id = $tenant->id;
-        $post->save();
+        $blogPost->tenant_id = $tenant->id;
+        $blogPost->save();
     }
 
     /**
@@ -141,4 +163,5 @@ final class DemoContentSeeder extends TenantDemoContentSeeder
 
         return $validated;
     }
+
 }
