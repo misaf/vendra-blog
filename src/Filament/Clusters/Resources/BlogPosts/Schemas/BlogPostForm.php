@@ -66,10 +66,11 @@ final class BlogPostForm
                     ->json(),
 
                 SpatieMediaLibraryFileUpload::make('image')
-                    ->collection('blog-posts')
+                    ->collection('blogs/posts')
                     ->columnSpanFull()
                     ->image()
                     ->label(__('vendra-blog::attributes.image'))
+                    ->multiple()
                     ->panelLayout('grid')
                     ->responsiveImages(),
 
