@@ -15,7 +15,7 @@ use Misaf\VendraBlog\Filament\Clusters\Resources\BlogPostCategories\Pages\ListBl
 use Misaf\VendraBlog\Filament\Clusters\Resources\BlogPostCategories\Pages\ViewBlogPostCategory;
 use Misaf\VendraBlog\Filament\Clusters\Resources\BlogPostCategories\Schemas\BlogPostCategoryForm;
 use Misaf\VendraBlog\Filament\Clusters\Resources\BlogPostCategories\Tables\BlogPostCategoryTable;
-use Misaf\VendraBlog\Filament\Clusters\Resources\Blogposts\RelationManagers\BlogPostRelationManager;
+use Misaf\VendraBlog\Filament\Clusters\Resources\BlogPosts\RelationManagers\BlogPostRelationManager;
 use Misaf\VendraBlog\Models\BlogPostCategory;
 
 final class BlogPostCategoryResource extends Resource
