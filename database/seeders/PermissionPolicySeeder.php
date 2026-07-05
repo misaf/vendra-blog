@@ -7,8 +7,8 @@ namespace Misaf\VendraBlog\Database\Seeders;
 use Misaf\VendraBlog\BlogPlugin;
 use Misaf\VendraBlog\Enums\BlogPostCategoryPolicyEnum;
 use Misaf\VendraBlog\Enums\BlogPostPolicyEnum;
+use Misaf\VendraSupport\Concerns\RequiresCurrentTenant;
 use Misaf\VendraSupport\Database\Seeders\PermissionPolicySeeder as BasePermissionPolicySeeder;
-use Misaf\VendraTenant\Concerns\RequiresCurrentTenant;
 
 final class PermissionPolicySeeder extends BasePermissionPolicySeeder
 {

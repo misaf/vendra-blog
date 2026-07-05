@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Validator;
 use Misaf\VendraBlog\Database\Factories\BlogPostCategoryFactory;
 use Misaf\VendraBlog\Database\Factories\BlogPostFactory;
 use Misaf\VendraBlog\Models\BlogPostCategory;
+use Misaf\VendraSupport\Concerns\RequiresCurrentTenant;
 use Misaf\VendraSupport\Database\Seeders\DemoContentSeeder as BaseDemoContentSeeder;
-use Misaf\VendraTenant\Concerns\RequiresCurrentTenant;
 use Misaf\VendraTenant\Models\Tenant;
 
 final class DemoContentSeeder extends BaseDemoContentSeeder

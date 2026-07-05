@@ -18,7 +18,7 @@ use Misaf\VendraActivityLog\Concerns\HasDefaultActivityLogOptions;
 use Misaf\VendraBlog\Database\Factories\BlogPostCategoryFactory;
 use Misaf\VendraBlog\Observers\BlogPostCategoryObserver;
 use Misaf\VendraMultimedia\Concerns\HasDefaultMediaConversions;
-use Misaf\VendraTenant\Traits\BelongsToTenant;
+use Misaf\VendraSupport\Traits\BelongsToTenant;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\EloquentSortable\Sortable;
 use Spatie\EloquentSortable\SortableTrait;

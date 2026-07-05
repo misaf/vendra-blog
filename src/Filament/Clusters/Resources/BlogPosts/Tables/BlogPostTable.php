@@ -137,7 +137,7 @@ final class BlogPostTable
                 Group::make('blogPostCategory.name')
                     ->label(__('vendra-blog::navigation.blog_post_category'))
                     ->getTitleFromRecordUsing(function (BlogPost $record, Livewire $livewire) {
-                        return $record->blogPostCategory->getTranslation('name', $livewire->activeLocale);
+                        return $record->blogPostCategory?->getTranslation('name', $livewire->activeLocale);
                     })
             );
     }
