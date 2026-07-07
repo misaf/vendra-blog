@@ -14,6 +14,8 @@ use Illuminate\Support\Number;
 use LaraZeus\SpatieTranslatable\Resources\RelationManagers\Concerns\Translatable;
 use Livewire\Attributes\Reactive;
 use Misaf\VendraBlog\Filament\Clusters\Resources\BlogPosts\BlogPostResource;
+use Misaf\VendraBlog\Models\BlogPost;
+use Misaf\VendraBlog\Models\BlogPostCategory;
 
 final class BlogPostRelationManager extends RelationManager
 {
@@ -43,10 +45,28 @@ final class BlogPostRelationManager extends RelationManager
 
     public static function getBadge(Model $ownerRecord, string $pageClass): string
     {
-        /** @var Collection<int, BlogPost> $blogPosts */
-        $blogPosts = $ownerRecord->getRelation('blogPosts') ?? collect();
+        if ( ! $ownerRecord instanceof BlogPostCategory) {
+            return (string) Number::format(0);
+        }
 
-        return (string) Number::format($blogPosts->count());
+        if ($ownerRecord->relationLoaded('blogPosts')) {
+            /** @var Collection<int, BlogPost> $blogPosts */
+            $blogPosts = $ownerRecord->getRelation('blogPosts');
+
+            return (string) Number::format($blogPosts->count());
+        }
+
+        $blogPostsCount = $ownerRecord->getAttribute('blog_posts_count');
+
+        if (is_numeric($blogPostsCount)) {
+            return (string) Number::format((int) $blogPostsCount);
+        }
+
+        return (string) Number::format(
+            BlogPost::query()
+                ->whereBelongsTo($ownerRecord)
+                ->count()
+        );
     }
 
     public function form(Schema $schema): Schema

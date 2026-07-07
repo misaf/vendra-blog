@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Misaf\VendraBlog\Filament\Clusters;
 
 use Filament\Clusters\Cluster;
+use Misaf\VendraBlog\BlogPlugin;
 
 final class BlogsCluster extends Cluster
 {
@@ -14,7 +15,7 @@ final class BlogsCluster extends Cluster
 
     public static function getNavigationGroup(): string
     {
-        return __('navigation.content_management');
+        return BlogPlugin::get()->getNavigationGroup();
     }
 
     public static function getNavigationLabel(): string
@@ -24,6 +25,6 @@ final class BlogsCluster extends Cluster
 
     public static function getClusterBreadcrumb(): string
     {
-        return __('navigation.content_management');
+        return BlogPlugin::get()->getNavigationGroup();
     }
 }

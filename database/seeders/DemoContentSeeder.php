@@ -10,7 +10,6 @@ use Misaf\VendraBlog\Database\Factories\BlogPostFactory;
 use Misaf\VendraBlog\Models\BlogPostCategory;
 use Misaf\VendraSupport\Concerns\RequiresCurrentTenant;
 use Misaf\VendraSupport\Database\Seeders\DemoContentSeeder as BaseDemoContentSeeder;
-use Misaf\VendraTenant\Models\Tenant;
 
 final class DemoContentSeeder extends BaseDemoContentSeeder
 {
@@ -18,27 +17,9 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
 
     protected function seedFactories(): void
     {
-        $tenant = $this->currentTenant();
+        $this->currentTenant();
 
-        $this->seedFactoryRecords($tenant);
-    }
-
-    /**
-     * @param list<array<string, mixed>> $records
-     */
-    protected function seedFixtures(array $records): void
-    {
-        $tenant = $this->currentTenant();
-
-        foreach ($records as $record) {
-            $this->seedFixtureRecord($tenant, $record);
-        }
-    }
-
-    protected function seedFactoryRecords(Tenant $tenant): void
-    {
         BlogPostCategoryFactory::new()
-            ->forTenant($tenant)
             ->enabled()
             ->count(4)
             ->create()
@@ -49,11 +30,24 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
                 ->create());
     }
 
-    protected function seedFixtureRecord(Tenant $tenant, array $record): void
+    /**
+     * @param  list<array<string, mixed>>  $records
+     */
+    protected function seedFixtures(array $records): void
     {
-        $data = $this->validatedFixtureRecord($record);
+        $this->currentTenant();
 
-        $this->handleSeedFixtureRecord($tenant, $data);
+        foreach ($records as $record) {
+            $this->seedFixtureRecord($record);
+        }
+    }
+
+    /**
+     * @param  array<string, mixed>  $record
+     */
+    protected function seedFixtureRecord(array $record): void
+    {
+        $this->handleSeedFixtureRecord($this->validatedFixtureRecord($record));
     }
 
     /**
@@ -70,20 +64,17 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
      *     }>
      * } $data
      */
-    private function handleSeedFixtureRecord(Tenant $tenant, array $data): void
+    private function handleSeedFixtureRecord(array $data): void
     {
-        $blogPostCategory = new BlogPostCategory([
+        $blogPostCategory = BlogPostCategory::create([
             'name'        => $data['name'],
             'description' => $data['description'],
             'slug'        => $data['slug'],
             'status'      => $data['status'],
         ]);
 
-        $blogPostCategory->tenant_id = $tenant->id;
-        $blogPostCategory->save();
-
         foreach ($data['blog_posts'] as $blogPostRecord) {
-            $this->handleBlogPostFixtureRecord($tenant, $blogPostCategory, $blogPostRecord);
+            $this->handleBlogPostFixtureRecord($blogPostCategory, $blogPostRecord);
         }
     }
 
@@ -95,22 +86,18 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
      *     status: bool
      * } $blogPostRecord
      */
-    private function handleBlogPostFixtureRecord(Tenant $tenant, BlogPostCategory $blogPostCategory, array $blogPostRecord): void
+    private function handleBlogPostFixtureRecord(BlogPostCategory $blogPostCategory, array $blogPostRecord): void
     {
-        $blogPost = $blogPostCategory->blogPosts()->make([
+        $blogPostCategory->blogPosts()->create([
             'name'        => $blogPostRecord['name'],
             'description' => $blogPostRecord['description'],
             'slug'        => $blogPostRecord['slug'],
             'status'      => $blogPostRecord['status'],
         ]);
-
-        $blogPost->tenant_id = $tenant->id;
-        $blogPost->save();
     }
 
     /**
-     * @param array<string, mixed> $record
-     *
+     * @param  array<string, mixed>  $record
      * @return array{
      *     name: non-empty-array<string, string>,
      *     description: non-empty-array<string, string>,
@@ -142,26 +129,25 @@ final class DemoContentSeeder extends BaseDemoContentSeeder
         $validated = Validator::make(
             data: $record,
             rules: [
-                'name'                         => ['required', 'array', 'min:1'],
-                'name.*'                       => ['required', 'string'],
-                'description'                  => ['required', 'array', 'min:1'],
-                'description.*'                => ['required', 'string'],
-                'slug'                         => ['required', 'array', 'min:1'],
-                'slug.*'                       => ['required', 'string'],
-                'status'                       => ['required', 'boolean'],
-                'blog_posts'                   => ['required', 'array', 'list'],
-                'blog_posts.*'                 => ['required', 'array:name,description,slug,status'],
-                'blog_posts.*.name'            => ['required', 'array', 'min:1'],
-                'blog_posts.*.name.*'          => ['required', 'string'],
-                'blog_posts.*.description'     => ['required', 'array', 'min:1'],
-                'blog_posts.*.description.*'   => ['required', 'string'],
-                'blog_posts.*.slug'            => ['required', 'array', 'min:1'],
-                'blog_posts.*.slug.*'          => ['required', 'string'],
-                'blog_posts.*.status'          => ['required', 'boolean'],
+                'name'                       => ['required', 'array', 'min:1'],
+                'name.*'                     => ['required', 'string'],
+                'description'                => ['required', 'array', 'min:1'],
+                'description.*'              => ['required', 'string'],
+                'slug'                       => ['required', 'array', 'min:1'],
+                'slug.*'                     => ['required', 'string'],
+                'status'                     => ['required', 'boolean'],
+                'blog_posts'                 => ['required', 'array', 'list'],
+                'blog_posts.*'               => ['required', 'array:name,description,slug,status'],
+                'blog_posts.*.name'          => ['required', 'array', 'min:1'],
+                'blog_posts.*.name.*'        => ['required', 'string'],
+                'blog_posts.*.description'   => ['required', 'array', 'min:1'],
+                'blog_posts.*.description.*' => ['required', 'string'],
+                'blog_posts.*.slug'          => ['required', 'array', 'min:1'],
+                'blog_posts.*.slug.*'        => ['required', 'string'],
+                'blog_posts.*.status'        => ['required', 'boolean'],
             ],
         )->validate();
 
         return $validated;
     }
-
 }
