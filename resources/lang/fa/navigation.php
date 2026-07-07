@@ -9,4 +9,5 @@ return [
     'blog_post_category'            => 'دسته بندی های پست وبلاگ',
     'blog_post_category_management' => 'مدیریت دسته بندی های پست وبلاگ',
     'blog_post_management'          => 'مدیریت پست های وبلاگ',
+    'content_management'            => 'مدیریت محتوا',
 ];

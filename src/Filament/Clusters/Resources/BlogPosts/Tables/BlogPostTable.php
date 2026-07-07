@@ -24,13 +24,15 @@ use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Oper
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Table;
 use Livewire\Component as Livewire;
-use Misaf\VendraBlog\Filament\Clusters\Resources\Concerns\HasDefaultAvatarImageUrl;
 use Misaf\VendraBlog\Models\BlogPost;
 use Misaf\VendraBlog\Models\BlogPostCategory;
+use Misaf\VendraSupport\Filament\Concerns\HasDefaultAvatarImageUrl;
+use Misaf\VendraSupport\Filament\Concerns\InteractsWithTranslatedTableRecords;
 
 final class BlogPostTable
 {
     use HasDefaultAvatarImageUrl;
+    use InteractsWithTranslatedTableRecords;
 
     public static function configure(Table $table): Table
     {
@@ -44,10 +46,10 @@ final class BlogPostTable
 
             SpatieMediaLibraryImageColumn::make('image')
                 ->alignCenter()
-                ->collection('blogs/posts')
+                ->collection(BlogPost::MEDIA_COLLECTION)
                 ->conversion('thumb-table')
                 ->defaultImageUrl(function (BlogPost $record, Livewire $livewire): string {
-                    return static::defaultAvatarImageUrl($record->getTranslation('name', $livewire->activeLocale));
+                    return static::defaultAvatarImageUrl(static::translatedAttribute($record, 'name', $livewire));
                 })
                 ->extraImgAttributes(['class' => 'saturate-50', 'loading' => 'lazy'])
                 ->label(__('vendra-blog::attributes.image'))
@@ -104,7 +106,7 @@ final class BlogPostTable
                                 ->selectable(
                                     IsRelatedToOperator::make()
                                         ->getOptionLabelFromRecordUsing(function (BlogPostCategory $record, Livewire $livewire) {
-                                            return $record->getTranslation('name', $livewire->activeLocale);
+                                            return static::translatedAttribute($record, 'name', $livewire);
                                         })
                                         ->preload()
                                         ->searchable()
@@ -137,8 +139,11 @@ final class BlogPostTable
                 Group::make('blogPostCategory.name')
                     ->label(__('vendra-blog::navigation.blog_post_category'))
                     ->getTitleFromRecordUsing(function (BlogPost $record, Livewire $livewire) {
-                        return $record->blogPostCategory?->getTranslation('name', $livewire->activeLocale);
+                        return $record->blogPostCategory
+                            ? static::translatedAttribute($record->blogPostCategory, 'name', $livewire)
+                            : '';
                     })
             );
     }
+
 }

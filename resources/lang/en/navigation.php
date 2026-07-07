@@ -9,4 +9,5 @@ return [
     'blog_post_category'            => 'Blog Post Categories',
     'blog_post_category_management' => 'Blog Post Category Management',
     'blog_post_management'          => 'Blog Post Management',
+    'content_management'            => 'Content Management',
 ];

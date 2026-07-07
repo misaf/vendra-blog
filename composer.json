@@ -27,12 +27,11 @@
 		"awcodes/filament-badgeable-column": "^4.0",
 		"filament/filament": "^5.0",
 		"filament/spatie-laravel-media-library-plugin": "^5.0",
-		"illuminate/support": "^12.0 || ^13.0",
+		"illuminate/support": "^13.0",
 		"lara-zeus/spatie-translatable": "^2.0",
-		"misaf/vendra-activity-log": "dev-master",
-		"misaf/vendra-multimedia": "dev-master",
-		"misaf/vendra-support": "dev-master",
-		"mokhosh/filament-jalali": "5.0",
+		"misaf/vendra-multimedia": "^1.0.0",
+		"misaf/vendra-support": "^1.1.0",
+		"misaf/filament-jalali": "^5.1",
 		"spatie/eloquent-sortable": "^5.0",
 		"spatie/laravel-package-tools": "^1.0",
 		"spatie/laravel-sluggable": "^4.0"
@@ -42,30 +41,36 @@
 		"larastan/larastan": "^3.0",
 		"laravel/boost": "^2.0",
 		"laravel/pint": "^1.0",
-		"misaf/vendra-testing": "dev-master",
+		"misaf/vendra-testing": "^1.0.0",
 		"mockery/mockery": "^1.0",
 		"nunomaduro/collision": "^8.0",
-		"orchestra/testbench": "^10.0",
+		"orchestra/testbench": "^11.0",
 		"pestphp/pest": "^4.0",
 		"pestphp/pest-plugin-arch": "^4.0",
 		"pestphp/pest-plugin-laravel": "^4.0",
 		"pestphp/pest-plugin-profanity": "^4.0",
-		"pestphp/pest-plugin-type-coverage": "^4.0"
+		"pestphp/pest-plugin-type-coverage": "^4.0",
+		"phpstan/extension-installer": "^1.4"
 	},
 	"minimum-stability": "stable",
 	"prefer-stable": true,
 	"autoload": {
 		"psr-4": {
 			"Misaf\\VendraBlog\\": "src/",
+			"Misaf\\VendraBlog\\Database\\Seeders\\": "database/seeders/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
 			"Misaf\\VendraBlog\\Database\\Factories\\": "database/factories/",
-			"Misaf\\VendraBlog\\Database\\Seeders\\": "database/seeders/",
 			"Misaf\\VendraBlog\\Tests\\": "tests/"
 		}
 	},
 	"config": {
 		"allow-plugins": {
 			"pestphp/pest-plugin": true,
-			"php-http/discovery": true
+			"php-http/discovery": true,
+			"phpstan/extension-installer": true
 		},
 		"optimize-autoloader": true,
 		"preferred-install": "dist",
