@@ -23,14 +23,17 @@ use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Filters\QueryBuilder\Constraints\BooleanConstraint;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Number;
 use Livewire\Component as Livewire;
-use Misaf\VendraBlog\Filament\Clusters\Resources\Concerns\HasDefaultAvatarImageUrl;
 use Misaf\VendraBlog\Models\BlogPostCategory;
+use Misaf\VendraSupport\Filament\Concerns\HasDefaultAvatarImageUrl;
+use Misaf\VendraSupport\Filament\Concerns\InteractsWithTranslatedTableRecords;
 
 final class BlogPostCategoryTable
 {
     use HasDefaultAvatarImageUrl;
+    use InteractsWithTranslatedTableRecords;
 
     public static function configure(Table $table): Table
     {
@@ -44,10 +47,10 @@ final class BlogPostCategoryTable
 
             SpatieMediaLibraryImageColumn::make('image')
                 ->alignCenter()
-                ->collection('blogs/posts/categories')
+                ->collection(BlogPostCategory::MEDIA_COLLECTION)
                 ->conversion('thumb-table')
                 ->defaultImageUrl(function (BlogPostCategory $record, Livewire $livewire): string {
-                    return static::defaultAvatarImageUrl($record->getTranslation('name', $livewire->activeLocale));
+                    return static::defaultAvatarImageUrl(static::translatedAttribute($record, 'name', $livewire));
                 })
                 ->extraImgAttributes(['class' => 'saturate-50', 'loading' => 'lazy'])
                 ->label(__('vendra-blog::attributes.image'))
@@ -56,13 +59,13 @@ final class BlogPostCategoryTable
             BadgeableColumn::make('name')
                 ->alignStart()
                 ->description(function (Livewire $livewire, BlogPostCategory $record): string {
-                    return $record->getTranslation('description', $livewire->activeLocale);
+                    return static::translatedAttribute($record, 'description', $livewire);
                 })
                 ->icon('heroicon-m-folder-plus')
                 ->label(__('vendra-blog::attributes.name'))
                 ->suffixBadges([
                     Badge::make('count')
-                        ->label(fn(BlogPostCategory $record): string => (string) Number::format($record->blogPosts()->count()))
+                        ->label(fn(BlogPostCategory $record): string => (string) Number::format(static::integerAttribute($record, 'blog_posts_count')))
                         ->size(Size::Small),
                 ]),
 
@@ -103,6 +106,7 @@ final class BlogPostCategoryTable
         ];
 
         return $table
+            ->modifyQueryUsing(fn(Builder $query): Builder => $query->withCount('blogPosts'))
             ->columns($columns)
             ->filters(
                 [
@@ -131,4 +135,5 @@ final class BlogPostCategoryTable
             ->defaultSort(column: 'position', direction: 'desc')
             ->reorderable(column: 'position', direction: 'desc');
     }
+
 }

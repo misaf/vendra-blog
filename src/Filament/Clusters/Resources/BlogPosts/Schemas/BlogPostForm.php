@@ -15,7 +15,8 @@ use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
-use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraBlog\Models\BlogPost;
+use Misaf\VendraSupport\Support\TenantAwareness;
 
 final class BlogPostForm
 {
@@ -45,19 +46,21 @@ final class BlogPostForm
                     ->required()
                     ->unique(
                         modifyRuleUsing: function (Unique $rule): void {
-                            $rule->where('tenant_id', Tenant::current()?->id)
+                            TenantAwareness::constrainUniqueRule($rule)
                                 ->withoutTrashed();
                         },
                     ),
 
                 TextInput::make('slug')
-                    ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly("data.slug"))
+                    ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.slug'))
                     ->columnSpan(['lg' => 1])
                     ->helperText(__('vendra-blog::attributes.slug_helper_text'))
                     ->label(__('vendra-blog::attributes.slug'))
-                    ->label(__('vendra-blog::attributes.slug'))
                     ->required()
-                    ->unique(modifyRuleUsing: fn(Unique $rule) => $rule->withoutTrashed()),
+                    ->unique(
+                        modifyRuleUsing: fn(Unique $rule): Unique => TenantAwareness::constrainUniqueRule($rule)
+                            ->withoutTrashed(),
+                    ),
 
                 RichEditor::make('description')
                     ->columnSpanFull()
@@ -66,7 +69,7 @@ final class BlogPostForm
                     ->json(),
 
                 SpatieMediaLibraryFileUpload::make('image')
-                    ->collection('blogs/posts')
+                    ->collection(BlogPost::MEDIA_COLLECTION)
                     ->columnSpanFull()
                     ->image()
                     ->label(__('vendra-blog::attributes.image'))
@@ -75,7 +78,7 @@ final class BlogPostForm
                     ->responsiveImages(),
 
                 Toggle::make('status')
-                    ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly("data.status"))
+                    ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.status'))
                     ->columnSpanFull()
                     ->default(false)
                     ->label(__('vendra-blog::attributes.status'))

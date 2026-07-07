@@ -6,6 +6,7 @@ namespace Misaf\VendraBlog\Providers;
 
 use Filament\Panel;
 use Illuminate\Foundation\Console\AboutCommand;
+use Illuminate\Support\Facades\Config;
 use Misaf\VendraBlog\BlogPlugin;
 use Misaf\VendraBlog\Console\Commands\SeedCommand;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
@@ -18,9 +19,10 @@ final class BlogServiceProvider extends PackageServiceProvider
     {
         $package
             ->name('vendra-blog')
+            ->hasConfigFile()
             ->hasTranslations()
             ->hasMigrations([
-                'create_blogs_table'
+                'create_blogs_table',
             ])
             ->hasCommands(SeedCommand::class)
             ->hasInstallCommand(function (InstallCommand $command): void {
@@ -31,7 +33,7 @@ final class BlogServiceProvider extends PackageServiceProvider
     public function packageRegistered(): void
     {
         Panel::configureUsing(function (Panel $panel): void {
-            if ('admin' !== $panel->getId()) {
+            if ( ! in_array($panel->getId(), $this->configuredPanelIds(), true)) {
                 return;
             }
 
@@ -42,5 +44,42 @@ final class BlogServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         AboutCommand::add('Vendra Blog', fn() => ['Version' => 'dev-master']);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function configuredPanelIds(): array
+    {
+        $panels = Config::get('vendra-blog.panels');
+
+        if (is_string($panels)) {
+            return [Config::string('vendra-blog.panels')];
+        }
+
+        if (is_array($panels)) {
+            return $this->filterPanelIds(Config::array('vendra-blog.panels'));
+        }
+
+        $legacyPanel = Config::get('vendra-blog.panel');
+
+        if (is_string($legacyPanel)) {
+            return [Config::string('vendra-blog.panel')];
+        }
+
+        if (is_array($legacyPanel)) {
+            return $this->filterPanelIds(Config::array('vendra-blog.panel'));
+        }
+
+        return ['admin'];
+    }
+
+    /**
+     * @param  array<mixed>  $panels
+     * @return array<int, string>
+     */
+    private function filterPanelIds(array $panels): array
+    {
+        return array_values(array_filter($panels, is_string(...)));
     }
 }

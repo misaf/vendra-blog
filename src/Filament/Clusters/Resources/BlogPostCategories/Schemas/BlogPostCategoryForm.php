@@ -14,7 +14,8 @@ use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Unique;
 use Livewire\Component as Livewire;
-use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraBlog\Models\BlogPostCategory;
+use Misaf\VendraSupport\Support\TenantAwareness;
 
 final class BlogPostCategoryForm
 {
@@ -35,19 +36,21 @@ final class BlogPostCategoryForm
                     ->required()
                     ->unique(
                         modifyRuleUsing: function (Unique $rule): void {
-                            $rule->where('tenant_id', Tenant::current()?->id)
+                            TenantAwareness::constrainUniqueRule($rule)
                                 ->withoutTrashed();
                         },
                     ),
 
                 TextInput::make('slug')
-                    ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly("data.slug"))
+                    ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.slug'))
                     ->columnSpan(['lg' => 1])
                     ->helperText(__('vendra-blog::attributes.slug_helper_text'))
                     ->label(__('vendra-blog::attributes.slug'))
-                    ->label(__('vendra-blog::attributes.slug'))
                     ->required()
-                    ->unique(modifyRuleUsing: fn(Unique $rule) => $rule->withoutTrashed()),
+                    ->unique(
+                        modifyRuleUsing: fn(Unique $rule): Unique => TenantAwareness::constrainUniqueRule($rule)
+                            ->withoutTrashed(),
+                    ),
 
                 Textarea::make('description')
                     ->columnSpanFull()
@@ -55,7 +58,7 @@ final class BlogPostCategoryForm
                     ->rows(5),
 
                 SpatieMediaLibraryFileUpload::make('image')
-                    ->collection('blog-posts/categories')
+                    ->collection(BlogPostCategory::MEDIA_COLLECTION)
                     ->columnSpanFull()
                     ->image()
                     ->label(__('vendra-blog::attributes.image'))
@@ -63,7 +66,7 @@ final class BlogPostCategoryForm
                     ->responsiveImages(),
 
                 Toggle::make('status')
-                    ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly("data.status"))
+                    ->afterStateUpdated(fn(Livewire $livewire) => $livewire->validateOnly('data.status'))
                     ->columnSpanFull()
                     ->default(false)
                     ->label(__('vendra-blog::attributes.status'))

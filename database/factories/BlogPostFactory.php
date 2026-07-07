@@ -6,10 +6,11 @@ namespace Misaf\VendraBlog\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Attributes\UseModel;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Misaf\VendraBlog\Models\BlogPost;
 use Misaf\VendraBlog\Models\BlogPostCategory;
-use Misaf\VendraTenant\Models\Tenant;
+use Misaf\VendraSupport\Support\TenantAwareness;
 
 /**
  * @extends Factory<BlogPost>
@@ -20,8 +21,7 @@ final class BlogPostFactory extends Factory
     public function definition(): array
     {
         return [
-            'tenant_id'             => Tenant::factory(),
-            'blog_post_category_id' => fn(array $attributes) => BlogPostCategory::factory()->forTenant($attributes['tenant_id']),
+            'blog_post_category_id' => BlogPostCategory::factory(),
             'name'                  => ['en' => fake()->sentences(1, true)],
             'description'           => ['en' => fake()->realTextBetween(100, 200)],
             'slug'                  => ['en' => fn(array $attributes) => Str::slug($attributes['name']['en'])],
@@ -29,15 +29,23 @@ final class BlogPostFactory extends Factory
         ];
     }
 
-    public function forTenant(Tenant $tenant): static
+    /**
+     * No-op without a tenant provider, since there is no `tenant_id` column.
+     */
+    public function forTenant(Model|int $tenant): static
     {
-        return $this->state(fn(): array => ['tenant_id' => $tenant->id]);
+        if ( ! TenantAwareness::enabled()) {
+            return $this;
+        }
+
+        return $this->state(fn(): array => [
+            'tenant_id' => $tenant instanceof Model ? $tenant->getKey() : $tenant,
+        ]);
     }
 
     public function forCategory(BlogPostCategory $blogPostCategory): static
     {
         return $this->state(fn(): array => [
-            'tenant_id'             => $blogPostCategory->tenant_id,
             'blog_post_category_id' => $blogPostCategory->id,
         ]);
     }
