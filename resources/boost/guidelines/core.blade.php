@@ -4,7 +4,7 @@ The `misaf/vendra-blog` package owns blog domain behavior and the Filament admin
 
 ### Standards
 
-- Keep blog domain code inside `app-modules/vendra-blog` using the `Misaf\VendraBlog` namespace.
+- Keep blog domain code inside `packages/vendra-blog` using the `Misaf\VendraBlog` namespace.
 - Use this package for models, migrations, factories, seeders, policies, permission enums, observers, Filament resources, translations, config, and package bootstrapping.
 - Keep JSON:API serialization and API routes in `misaf/vendra-blog-api`.
 - Follow existing model conventions: tenant ownership, translated `name` / `description` / `slug`, soft deletes, sortable `position`, media collections, factories, and typed relationships.

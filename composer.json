@@ -1,6 +1,5 @@
 {
     "name": "misaf/vendra-blog",
-    "version": "0.0.7",
     "keywords": [
         "laravel",
         "filamentphp",
@@ -61,13 +60,13 @@
         }
     },
     "extra": {
+        "branch-alias": {
+            "dev-master": "0.0.x-dev"
+        },
         "laravel": {
             "providers": [
                 "Misaf\\VendraBlog\\Providers\\BlogServiceProvider"
             ]
-        },
-        "branch-alias": {
-            "dev-master": "13.x-dev"
         }
     },
     "scripts": {
