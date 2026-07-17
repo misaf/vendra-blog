@@ -10,6 +10,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\Layout\Component as LayoutComponent;
@@ -19,6 +20,7 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\QueryBuilder;
 use Filament\Tables\Filters\QueryBuilder\Constraints\BooleanConstraint;
+use Filament\Tables\Filters\QueryBuilder\Constraints\NumberConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint;
 use Filament\Tables\Filters\QueryBuilder\Constraints\RelationshipConstraint\Operators\IsRelatedToOperator;
 use Filament\Tables\Grouping\Group;
@@ -43,7 +45,7 @@ final class BlogPostTable
         $columns = [
             TextColumn::make('row')
                 ->label('#')
-                ->rowIndex(),
+                ->rowIndex()->sortable(),
 
             SpatieMediaLibraryImageColumn::make('image')
                 ->alignCenter()
@@ -69,7 +71,7 @@ final class BlogPostTable
 
             ToggleColumn::make('status')
                 ->label(__('vendra-blog::attributes.status'))
-                ->onIcon('heroicon-m-bolt'),
+                ->onIcon(Heroicon::Bolt),
 
             TextColumn::make('created_at')
                 ->alignCenter()
@@ -78,7 +80,7 @@ final class BlogPostTable
                 ->label(__('vendra-blog::attributes.created_at'))
                 ->sinceTooltip()
                 ->toggleable(isToggledHiddenByDefault: true)
-                ->unless(
+                ->when(
                     app()->isLocale('fa'),
                     fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
                     fn(TextColumn $column) => $column->dateTime('Y-m-d H:i')
@@ -91,7 +93,7 @@ final class BlogPostTable
                 ->label(__('vendra-blog::attributes.updated_at'))
                 ->sinceTooltip()
                 ->toggleable(isToggledHiddenByDefault: true)
-                ->unless(
+                ->when(
                     app()->isLocale('fa'),
                     fn(TextColumn $column) => $column->jalaliDateTime('Y-m-d H:i', latinNumbers: true),
                     fn(TextColumn $column) => $column->dateTime('Y-m-d H:i')
@@ -118,6 +120,8 @@ final class BlogPostTable
 
                             BooleanConstraint::make('status')
                                 ->label(__('vendra-blog::attributes.status')),
+
+                            NumberConstraint::make('position'),
                         ]),
                 ],
                 layout: FiltersLayout::AboveContentCollapsible,
@@ -136,7 +140,7 @@ final class BlogPostTable
                     DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort(column: 'position', direction: 'desc')
+            ->defaultSort(column: 'id', direction: 'desc')
             ->reorderable(column: 'position', direction: 'desc')
             ->defaultGroup(
                 Group::make('blogPostCategory.name')
@@ -159,7 +163,7 @@ final class BlogPostTable
         return [
             TextColumn::make('tags.name')
                 ->badge()
-                ->label(__('vendra-blog::attributes.tags'))
+                ->label(__('vendra-support::attributes.tags'))
                 ->toggleable(),
         ];
     }
