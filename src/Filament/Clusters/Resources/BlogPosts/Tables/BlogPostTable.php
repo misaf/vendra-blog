@@ -15,6 +15,7 @@ use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\ColumnGroup;
 use Filament\Tables\Columns\Layout\Component as LayoutComponent;
 use Filament\Tables\Columns\SpatieMediaLibraryImageColumn;
+use Filament\Tables\Columns\SpatieTagsColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Enums\FiltersLayout;
@@ -45,7 +46,8 @@ final class BlogPostTable
         $columns = [
             TextColumn::make('row')
                 ->label('#')
-                ->rowIndex()->sortable(['id']),
+                ->rowIndex()
+                ->sortable(['id']),
 
             SpatieMediaLibraryImageColumn::make('image')
                 ->alignCenter()
@@ -66,8 +68,6 @@ final class BlogPostTable
                 ->alignStart()
                 ->label(__('vendra-blog::attributes.slug'))
                 ->toggleable(isToggledHiddenByDefault: true),
-
-            ...self::tagColumns(),
 
             ToggleColumn::make('status')
                 ->label(__('vendra-blog::attributes.status'))
@@ -99,6 +99,13 @@ final class BlogPostTable
                     fn(TextColumn $column) => $column->dateTime('Y-m-d H:i')
                 ),
         ];
+
+        if (TagIntegration::isAvailable()) {
+            $columns[] = SpatieTagsColumn::make('tags')
+                ->label(__('vendra-support::attributes.tags'))
+                ->type(BlogPost::TAG_TYPE)
+                ->toggleable();
+        }
 
         return $table
             ->columns($columns)
@@ -151,21 +158,6 @@ final class BlogPostTable
                             : '';
                     })
             );
-    }
-
-    /** @return list<TextColumn> */
-    private static function tagColumns(): array
-    {
-        if ( ! TagIntegration::isAvailable()) {
-            return [];
-        }
-
-        return [
-            TextColumn::make('tags.name')
-                ->badge()
-                ->label(__('vendra-support::attributes.tags'))
-                ->toggleable(),
-        ];
     }
 
 }
