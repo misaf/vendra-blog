@@ -76,13 +76,11 @@ final class BlogPostTable
                 ->icon(Heroicon::Link)
                 ->toggleable(isToggledHiddenByDefault: true),
 
-            ToggleColumn::make('status')
-                ->label(__('vendra-blog::attributes.status'))
+            ToggleColumn::make('active')
+                ->label(__('vendra-blog::attributes.active'))
                 ->onIcon(Heroicon::Bolt),
 
             TextColumn::make('created_at')
-                ->alignCenter()
-                ->badge()
                 ->extraCellAttributes(['dir' => 'ltr'])
                 ->label(__('vendra-blog::attributes.created_at'))
                 ->sinceTooltip()
@@ -93,8 +91,6 @@ final class BlogPostTable
                 ),
 
             TextColumn::make('updated_at')
-                ->alignCenter()
-                ->badge()
                 ->extraCellAttributes(['dir' => 'ltr'])
                 ->label(__('vendra-blog::attributes.updated_at'))
                 ->sinceTooltip()
@@ -134,8 +130,8 @@ final class BlogPostTable
                                         ->titleAttribute('name'),
                                 ),
 
-                            BooleanConstraint::make('status')
-                                ->label(__('vendra-blog::attributes.status')),
+                            BooleanConstraint::make('active')
+                                ->label(__('vendra-blog::attributes.active')),
 
                             NumberConstraint::make('position'),
                         ]),
